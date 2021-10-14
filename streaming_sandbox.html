@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <meta name="description" content="A minimal (setting with coupled )elastic solid--fluid interactions">
+  <!-- <meta name="description" content="A minimal (setting with coupled )elastic solid--fluid interactions"> -->
+  <meta name="keywords" content="CFD, fluids, elasticity, hyperelasticity, benchmark">
+  <meta name="author" content="Tejaswin Parthasarathy">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elastohydrodynamic sandbox</title>
+  <link rel="stylesheet" href="streaming_sandbox.css">
+  <!-- pararllel_slab_sandbox.css -->
+</head>
+
+<body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG.js" defer></script>
+  <h1>
+    Streaming Sandbox
+    <!-- A minimal setting with coupled elastic solid--fluid interactions -->
+    <!---Shear flow benchmark for testing elastic solid--fluid coupling algorithms--->
+  </h1>
+
+  <hr>
+  <p style="font-size: 16px; text-align: justify;">
+    Description for Streaming Sandbox
+  </p>
+  <hr>
+  <div style="padding:20px; margin-left:auto; margin-right:auto; text-align:center;">
+    <div class="row">
+
+      <div class="column">
+        <div class="row">
+          <button type="button" id="initButton" class="loading_button"><span class="loading_button_text">Initialize engine</span></button>
+         </div>
+         <div class="row">
+          <span style="font-size:14px;">Initialization takes 10s to load</span>
+        </div>
+      </div>
+
+      <div class="double_width_column">
+        <div class="row">
+          <button id="simulateButton" type="button" disabled class="loading_button">
+            <span class="loading_button_text">Simulate!</span>
+          </button>
+        </div>
+        <div class="row">
+          <span style="font-size:14px;">Only need to simulate once:)</span>
+          <!-- First simulation takes longer -->
+        </div>
+      </div>
+
+      <div class="column">
+        <div class="row">
+          <select disabled id="archetypeSelection" class="big_button">
+            <option value="h1">Type A</option>
+            <option value="h2">Type B</option>
+          </select>
+        </div>
+        <div class="row">
+          <span style="font-size:14px;">Choose any archetype</span>
+        </div>
+      </div>
+
+
+     
+      </div>
+  
+
+  <div>
+    <div class="row" style="margin-top: 0px;">
+      <div class="column">
+        <div style="margin-left:-20px; margin-right:-20px; text-align:center; white-space: unset">
+          <div class="tooltip"> Womersley number <span class="tooltiptext"> Description here </span> </div> <span> \( M\) = </span> <span id="womersleyReadout"></span>
+          <br>
+          <div class="row">
+            <span class ="column" style="font-size:12px;"> More Viscous </span>
+            <span class="column"><input type="range" min="1" max="100" step="1" value="10"
+              id="womersleySlider"></span class="column">
+              <span class ="column" style="font-size:12px;">Less Viscous</span>
+            </div>
+            <br>
+            <div class="tooltip"> Cauchy number 
+              <span class="tooltiptext"> Description here </span>
+            </div>
+             <span> \(Cau\) = </span><span id="cauchyReadout"></span>
+            <br>
+            <div class="row">
+              <span class ="column" style="font-size:12px;"> More Stiff </span>
+              <span class="column"><input type="range" min="1" max="100" step="1" value="10"
+                id="cauchySlider"></span class="column">
+                <span class ="column" style="font-size:12px;">Less Stiff</span>
+              </div>
+            <br>
+            </div>
+            <div class="para">
+              <span class="para_inline">
+                \(\delta_{DC}/a\) = 
+                <span id="deltaAReadout"></span>
+                </span></div>
+
+          </div>
+
+          <div class="double_width_column" style="margin-right: 0px; margin-left: 0px;">
+            <div class="row">
+              <div class="double_width_column" style="margin-right: -30px; margin-left: -20px;">
+                <!-- style="margin-right: 0; margin-left: 0; -->
+                <figure id="plot_div">
+                </figure>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+
+<hr> 
+
+    <footer>
+      <p style="font-size:14px; text-align:center;">
+        This is a beta version of the sandbox and we welcome your <a href="mailto:tp5@illinois.edu?subject = Feedback on Snake Sandbox"> feedbacks </a>.
+      </p>
+
+      <p style="font-size:14px; text-align:center;">
+        Designed by <a href="https://parthas1.github.io/" target="_blank" rel="noopener">Tejaswin Parthasarathy</a>,
+        and powered by <a href="https://pyodide.org/en/stable/" target="_blank" rel="noopener">Pyodide</a>.
+        For best experience, please use Chrome or Firefox.
+      </p>
+
+      <p style="font-size:14px; text-align:center;">
+        Copyright © 2021 <a href="https://parthas1.github.io/" target="_blank" rel="noopener">Tejaswin Parthasarathy</a>, <a href="https://mattia-lab.com/" target="_blank" rel="noopener">GazzolaLab</a>.
+      </p>
+    </footer>
+  <script type="text/javascript" id="MathJax-script"
+    src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML'>
+  </script>
+  <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script type="text/javascript" src="streaming_sandbox.js"></script>
+  <noscript>
+    <p>Oops! This website requires a JavaScript-enabled browser.</p>
+  </noscript>
+
+</body>
+
+</html>
