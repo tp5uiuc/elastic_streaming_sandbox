@@ -1,5 +1,50 @@
 /* Initialization functions*/
 
+class ScriptLoader {
+    constructor(script) {
+        this.script = script;
+        this.scriptElement = document.createElement("script");
+        this.head = document.querySelector("head");
+    }
+
+    load() {
+        return new Promise((resolve, reject) => {
+            this.scriptElement.src = this.script;
+            this.scriptElement.onload = e => resolve(e);
+            this.scriptElement.onerror = e => reject(e);
+            this.head.appendChild(this.scriptElement);
+        });
+    }
+}
+
+
+// async function to fetch the raw content of the gist
+/**
+ * @param filename
+ */
+async function fetchFile(filename) {
+
+    // const gistID = 'ea4b6c8e831ff923640aeda185241d14'
+    // const url = `https://api.github.com/gists/${gistID}`
+    // const fileName = "random_walk_2d.py"
+
+    const rawContent = await fetch(filename)
+
+    // .then(res => res.json())
+        .then(data =>
+
+        // console.log(data.text());
+            data.text()
+
+            // return data.files[fileName].content;
+        );
+
+    // console.log(rawContent);
+
+    return rawContent;
+}
+
+
 class DefaultTypeA {
   static defaultW() {
     return 8;
@@ -18,18 +63,30 @@ class DefaultTypeB {
   }
 }
 
+class PlotRange{
+  static radius(){
+    return 1.0;
+  }
+  static min(){
+    return -4.0 * PlotRange.radius();
+  }
+  static max(){
+    return 4 * PlotRange.radius();
+  }
+}
 /**
  *
  */
 function getPlotLayoutData() {
   return {
     xaxis: {
-      range: [-3, 3],
+      range: [PlotRange.min(), PlotRange.max()],
       zeroline: false,
       visible: false,
     },
     yaxis: {
-      range: [-3, 3],
+      scaleanchor: "x",
+      range: [PlotRange.min(), PlotRange.max()],
       zeroline: false,
       visible: false,
     },
@@ -44,10 +101,10 @@ function getPlotLayoutData() {
         xref: "x",
         yref: "y",
         fillcolor: "rgba(128, 128, 128, 1)",
-        x0: -1,
-        y0: -1,
-        x1: 1,
-        y1: 1,
+        x0: -PlotRange.radius(),
+        y0: -PlotRange.radius(),
+        x1: PlotRange.radius(),
+        y1: PlotRange.radius(),
         line: {
           color: "rgba(0, 0, 0, 1)",
         },
@@ -56,17 +113,38 @@ function getPlotLayoutData() {
   };
 }
 
+function assembleDataForPlotlyFigure(data) {
+    return [
+      {
+        type: "contour",
+        visible: true,
+        x: data[0],
+        y: data[1],
+        z: data[2],
+        colorscale: [
+          [0, "rgb(232,74, 39)"],
+          [0.5, "rgb(255,255,255)"],
+          [1, "rgb(5,86,165)"],
+        ],
+        showscale: false,
+        contours: {
+          coloring: "fill",
+        },
+      },
+    ];
+}
+
+
 // placehold plot
 /**
  *
  */
 function placeholderPlot() {
   var size = 100,
-    x = new Array(size),
-    y = new Array(size),
-    z = new Array(size),
-    i,
-    j;
+  x = new Array(size),
+  y = new Array(size),
+  z = new Array(size);
+
   for (var i = 0; i < size; i++) {
     x[i] = y[i] = -2 * Math.PI + (4 * Math.PI * i) / size;
     z[i] = new Array(size);
@@ -78,85 +156,133 @@ function placeholderPlot() {
         Math.sin(x[i]) * Math.cos(y[j]) * Math.sin(x[j]) * Math.cos(y[i]);
     }
   }
+  let data = [x, y, z];
+
   Plotly.newPlot(
     "plot_div",
-    [
-      {
-        type: "contour",
-        visible: true,
-        x: x,
-        y: y,
-        z: z,
-        colorscale: [
-          [0, "rgb(232,74, 39)"],
-          [0.5, "rgb(255,255,255)"],
-          [1, "rgb(5,86,165)"],
-        ],
-        showscale: false,
-        contours: {
-          coloring: "fill",
-        },
-      },
-    ],
+    assembleDataForPlotlyFigure(data),
     getPlotLayoutData()
   );
 }
 
-function changePlot(wn, cn) {
-  var size = 100,
-    x = new Array(size),
-    y = new Array(size),
-    z = new Array(size),
-    i,
-    j;
-  for (var i = 0; i < size; i++) {
-    x[i] = y[i] = -2 * Math.PI * wn + (4 * Math.PI * i) / size;
-    z[i] = new Array(size);
-  }
-  for (var i = 0; i < size; i++) {
-    for (var j = 0; j < size; j++) {
-      var r2 = x[i] * x[i] + y[j] * y[j];
-      z[i][j] =
-        Math.sin(x[i]) * Math.cos(y[j]) * Math.sin(x[j]) * Math.cos(y[i]) * cn;
-    }
-  }
-  Plotly.newPlot(
-    "plot_div",
-    [
-      {
-        type: "contour",
-        visible: true,
-        x: x,
-        y: y,
-        z: z,
-        colorscale: [
-          [0, "rgb(232,74, 39)"],
-          [0.5, "rgb(255,255,255)"],
-          [1, "rgb(5,86,165)"],
-        ],
-        showscale: false,
-        contours: {
-          coloring: "fill",
-        },
-      },
-    ],
-    getPlotLayoutData()
-  );
-}
+// function streamingPlot(wn, cn) {
+//   var size = 100,
+//     x = new Array(size),
+//     y = new Array(size),
+//     z = new Array(size),
+//     i,
+//     j;
+//   for (var i = 0; i < size; i++) {
+//     x[i] = y[i] = -2 * Math.PI * wn + (4 * Math.PI * i) / size;
+//     z[i] = new Array(size);
+//   }
+//   for (var i = 0; i < size; i++) {
+//     for (var j = 0; j < size; j++) {
+//       var r2 = x[i] * x[i] + y[j] * y[j];
+//       z[i][j] =
+//         Math.sin(x[i]) * Math.cos(y[j]) * Math.sin(x[j]) * Math.cos(y[i]) * cn;
+//     }
+//   }
+//   let data = [x, y, z];
+
+//   Plotly.newPlot(
+//     "plot_div",
+//     assembleDataForPlotlyFigure(data),
+//     getPlotLayoutData()
+//   );
+// }
 
 /**
  *
  */
 async function init() {
   initButton.classList.add("button--loading");
+
+  //loadingIndicator.classList.add("mr-2", "progressAnimate");
+  const loader = new ScriptLoader(
+      "https://cdn.jsdelivr.net/pyodide/v0.17.0/full/pyodide.js"
+  );
+  await loader.load();
+  await loadPyodide(
+      { indexURL: "https://cdn.jsdelivr.net/pyodide/v0.17.0/full/" }
+  );
+  await pyodide.loadPackage([
+      "numpy",
+      // "scipy"
+  ]);
+
+  console.log("Numpy is now available ");
+
   // init process
   simulateButton.removeAttribute("disabled");
   archetypeSelection.removeAttribute("disabled");
   initButton.classList.remove("button--loading");
 }
 
-async function runSimulator() {
-  changePlot(womersleyNumber(), cauchyNumber());
+/**
+ * @param start
+ * @param stop
+ * @param num
+ * @param endpoint
+ */
+function linspace(start, stop, num, endpoint = true) {
+    const div = endpoint ? (num - 1) : num;
+    const step = (stop - start) / div;
+
+    return Float32Array.from({ length: num }, (_, i) => start + step * i);
+}
+
+function generateXY(n_samples){
+    const x = linspace(PlotRange.min(), PlotRange.max(), n_samples);
+    const y = linspace(PlotRange.min(), PlotRange.max(), n_samples);
+    return [x, y];
+}
+
+/**
+ * @param config
+ * @param times
+ */
+function generateSimulator(config) {
+    return fileFetchPromise.then(res => pyodide.runPython(res))
+        .then(_ => pyodide.globals.get("simulator")(config));
+}
+
+
+async function runSimulator(config) {
+  simulatorPromise = generateSimulator(config);
+  simulatorPromise.then(sim => {
+      // any simulator specific configuration
+      const n_samples = 51;
+      xy = generateXY(n_samples);
+      // console.log(typeof())
+      const py_z = sim(xy);
+      const z = py_z.toJs();
+      py_z.destroy();
+
+      data = [...xy, z];
+      Plotly.newPlot(
+        "plot_div",
+        assembleDataForPlotlyFigure(data),
+        getPlotLayoutData()
+      );
+      }); //.then(sim => {sim.destroy()});
+  // streamingPlot(config["womerseley"], config["cauchy"]);
+}
+
+function buildConfig() {
+  return {
+    "womerseley" : womersleyNumber(),
+    "cauchy" : cauchyNumber()
+  };
+}
+
+/**
+ *
+ */
+function startSimulator() {
+  const config = buildConfig();
+  console.log("starting simulator");
+  runSimulator(config);
 }
 
 /**
@@ -164,15 +290,6 @@ async function runSimulator() {
  */
 function restartSimulator() {
   startSimulator();
-}
-
-/**
- *
- */
-function startSimulator() {
-  runSimulator();
-
-  console.log("starting simulator");
 }
 
 /* Utilities */
@@ -259,7 +376,7 @@ const deltaAReadout = document.querySelector("#deltaAReadout");
 
 // add event listeners
 initButton.addEventListener("click", init, { once: true });
-simulateButton.addEventListener("click", runSimulator, { once: true });
+simulateButton.addEventListener("click", startSimulator, { once: true });
 
 function defaultSimulationParameters() {
   // set default here
@@ -319,6 +436,8 @@ function showParameterInfo() {
   showCauchyNumber();
 }
 
+// perform the gist fetching
+const fileFetchPromise = fetchFile("streaming_sandbox.py");
 addListeners();
 
 MathJax.Hub.Queue(["Typeset", MathJax.Hub]); // LaTex enabled
