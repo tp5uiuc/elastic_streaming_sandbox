@@ -3,13 +3,13 @@
 <html>
 
 <head>
-  <meta name="description" content="A minimal (setting with coupled )elastic solid--fluid interactions">
+  <meta name="description" content="Viscous streaming from elastic solid--flow interactions">
   <!-- <meta name="description" content="A minimal (setting with coupled )elastic solid--fluid interactions"> -->
-  <meta name="keywords" content="CFD, fluids, elasticity, hyperelasticity, benchmark">
+  <meta name="keywords" content="CFD, fluids, elasticity, hyperelasticity, streaming">
   <meta name="author" content="Tejaswin Parthasarathy">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Elastohydrodynamic sandbox</title>
+  <title>Elastic streaming sandbox</title>
   <link rel="stylesheet" href="streaming_sandbox.css">
   <!-- pararllel_slab_sandbox.css -->
 </head>
@@ -17,14 +17,16 @@
 <body>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG.js" defer></script>
   <h1>
-    Streaming Sandbox
+    Elastic Streaming
     <!-- A minimal setting with coupled elastic solid--fluid interactions -->
     <!---Shear flow benchmark for testing elastic solid--fluid coupling algorithms--->
   </h1>
 
   <hr>
   <p style="font-size: 16px; text-align: justify;">
-    Description for Streaming Sandbox
+  The page provides an interactive sandbox for gaining intuition of body elasticity effects
+  in viscous streaming flows. Elasticity offers an additional, tunable streaming process available even in Stokes flows and hence paves way for advanced forms of flow manipulation at microscale. You can visualize
+  these elasticity effects by accessing a drop-down menu for choosing behavioral archetypes (from rigid to elastic). If you want more fine-level control, you can utilize sliders to change dynamical parameters. To access the physical meaning of these parameters, please hover over the underlined text.
   </p>
   <hr>
   <div style="padding:20px; margin-left:auto; margin-right:auto; text-align:center;">
@@ -72,7 +74,7 @@
     <div class="row" style="margin-top: 0px;">
       <div class="column">
         <div style="margin-left:-20px; margin-right:-20px; text-align:center; white-space: unset">
-          <div class="tooltip"> Womersley number <span class="tooltiptext"> Description here </span> </div> <span> \( M\) = </span> <span id="womersleyReadout"></span>
+          <div class="tooltip"> Womersley number <span class="tooltiptext"> A proxy for the Reynolds number, the ratio of inertial to viscous forces </span> </div> <span> \( M\) = </span> <span id="womersleyReadout"></span>
           <br>
           <div class="row">
             <span class ="column" style="font-size:12px;"> More Viscous </span>
@@ -82,7 +84,7 @@
             </div>
             <br>
             <div class="tooltip"> Cauchy number 
-              <span class="tooltiptext"> Description here </span>
+              <span class="tooltiptext"> Ratio of inertial to elastic forces </span>
             </div>
              <span> \(Cau\) = </span><span id="cauchyReadout"></span>
             <br>
@@ -96,10 +98,14 @@
             </div>
             <div class="para">
               <span class="para_inline">
-                \(\delta_{DC}/a\) = 
+                <div class="tooltip">
+                  \(\delta_{DC}/a\)
+                  <span class="tooltiptext"> Scaled DC boundary layer thickness </span>
+                </div>
+                =
                 <span id="deltaAReadout"></span>
-                </span></div>
-
+              </span>
+            </div>
           </div>
 
           <div class="double_width_column" style="margin-right: 0px; margin-left: 0px;">
@@ -119,17 +125,17 @@
 
     <footer>
       <p style="font-size:14px; text-align:center;">
-        This is a beta version of the sandbox and we welcome your <a href="mailto:tp5@illinois.edu?subject = Feedback on Snake Sandbox"> feedbacks </a>.
+        This is a beta version of the sandbox and we welcome your <a href="mailto:tp5@illinois.edu?subject = [Sandbox] Feedback on Elastic streaming sandbox"> feedbacks </a>.
       </p>
 
       <p style="font-size:14px; text-align:center;">
         Designed by <a href="https://parthas1.github.io/" target="_blank" rel="noopener">Tejaswin Parthasarathy</a>,
-        and powered by <a href="https://pyodide.org/en/stable/" target="_blank" rel="noopener">Pyodide</a>.
-        For best experience, please use Chrome or Firefox.
+        with help from <a href="https://www.linkedin.com/in/ruidi-huang/">Ruidi Huang</a>.
+        Powered by <a href="https://pyodide.org/en/stable/" target="_blank" rel="noopener">Pyodide</a>.
       </p>
 
       <p style="font-size:14px; text-align:center;">
-        Copyright © 2021 <a href="https://parthas1.github.io/" target="_blank" rel="noopener">Tejaswin Parthasarathy</a>, <a href="https://mattia-lab.com/" target="_blank" rel="noopener">GazzolaLab</a>.
+        Copyright © 2022 <a href="https://parthas1.github.io/" target="_blank" rel="noopener">Tejaswin Parthasarathy</a>, <a href="https://mattia-lab.com/" target="_blank" rel="noopener">GazzolaLab</a>.
       </p>
     </footer>
   <script type="text/javascript" id="MathJax-script"
