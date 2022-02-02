@@ -45,21 +45,29 @@ async function fetchFile(filename) {
 }
 
 
-class DefaultTypeA {
-  static defaultW() {
-    return 8;
+class RigidDefaultParams {
+  static defaultWomersley() {
+    // -1 because slider starts at 1
+    return 8 * 10; //scaling
   }
   static defaultCau() {
-    return 13;
+    return 0; // scaling
+  }
+  static defaultZeta() {
+    return 0.2 * 10; // scaling
   }
 }
 
-class DefaultTypeB {
-  static defaultW() {
-    return 12;
+class ElasticDefaultParams {
+  static defaultWomersley() {
+    // -1 because slider starts at 1
+    return 8 * 10;
   }
   static defaultCau() {
-    return 49;
+    return 0.05 * 100;
+  }
+  static defaultZeta() {
+    return 0.2 * 10;
   }
 }
 
@@ -71,7 +79,7 @@ class PlotRange{
     return -4.0 * PlotRange.radius();
   }
   static max(){
-    return 4 * PlotRange.radius();
+    return 4.0 * PlotRange.radius();
   }
 }
 /**
@@ -94,8 +102,7 @@ function getPlotLayoutData() {
     autosize: true,
     margin: { l: 40, r: 40, b: 40, t: 40 },
     shapes: [
-      // Unfilled Circle
-
+      // Main Circle
       {
         type: "circle",
         xref: "x",
@@ -105,6 +112,19 @@ function getPlotLayoutData() {
         y0: -PlotRange.radius(),
         x1: PlotRange.radius(),
         y1: PlotRange.radius(),
+        line: {
+          color: "rgba(0, 0, 0, 1)",
+        },
+      },
+      {
+        type: "circle",
+        xref: "x",
+        yref: "y",
+        fillcolor: "rgba(0, 255, 60, 0.6)",
+        x0: -zetaNumber(),
+        y0: -zetaNumber(),
+        x1: zetaNumber(),
+        y1: zetaNumber(),
         line: {
           color: "rgba(0, 0, 0, 1)",
         },
@@ -127,6 +147,7 @@ function assembleDataForPlotlyFigure(data) {
           [1, "rgb(5,86,165)"],
         ],
         showscale: false,
+        ncontours: 30,
         contours: {
           coloring: "fill",
         },
@@ -148,14 +169,18 @@ function placeholderPlot() {
   for (var i = 0; i < size; i++) {
     x[i] = y[i] = -2 * Math.PI + (4 * Math.PI * i) / size;
     z[i] = new Array(size);
-  }
-  for (var i = 0; i < size; i++) {
     for (var j = 0; j < size; j++) {
-      var r2 = x[i] * x[i] + y[j] * y[j];
-      z[i][j] =
-        Math.sin(x[i]) * Math.cos(y[j]) * Math.sin(x[j]) * Math.cos(y[i]);
+      z[i][j] = 1.0;
     }
   }
+  // for (var i = 0; i < size; i++) {
+  //   for (var j = 0; j < size; j++) {
+  //     var r2 = x[i] * x[i] + y[j] * y[j];
+  //     z[i][j] =
+  //       Math.sin(x[i]) * Math.cos(y[j]) * Math.sin(x[j]) * Math.cos(y[i]);
+  //   }
+  // }
+
   let data = [x, y, z];
 
   Plotly.newPlot(
@@ -165,33 +190,6 @@ function placeholderPlot() {
   );
 }
 
-// function streamingPlot(wn, cn) {
-//   var size = 100,
-//     x = new Array(size),
-//     y = new Array(size),
-//     z = new Array(size),
-//     i,
-//     j;
-//   for (var i = 0; i < size; i++) {
-//     x[i] = y[i] = -2 * Math.PI * wn + (4 * Math.PI * i) / size;
-//     z[i] = new Array(size);
-//   }
-//   for (var i = 0; i < size; i++) {
-//     for (var j = 0; j < size; j++) {
-//       var r2 = x[i] * x[i] + y[j] * y[j];
-//       z[i][j] =
-//         Math.sin(x[i]) * Math.cos(y[j]) * Math.sin(x[j]) * Math.cos(y[i]) * cn;
-//     }
-//   }
-//   let data = [x, y, z];
-
-//   Plotly.newPlot(
-//     "plot_div",
-//     assembleDataForPlotlyFigure(data),
-//     getPlotLayoutData()
-//   );
-// }
-
 /**
  *
  */
@@ -200,15 +198,16 @@ async function init() {
 
   //loadingIndicator.classList.add("mr-2", "progressAnimate");
   const loader = new ScriptLoader(
-      "https://cdn.jsdelivr.net/pyodide/v0.17.0/full/pyodide.js"
+      "https://cdn.jsdelivr.net/pyodide/v0.19.0/full/pyodide.js"
   );
   await loader.load();
-  await loadPyodide(
-      { indexURL: "https://cdn.jsdelivr.net/pyodide/v0.17.0/full/" }
+  pyodide = await loadPyodide(
+      { indexURL: "https://cdn.jsdelivr.net/pyodide/v0.19.0/full/" }
   );
   await pyodide.loadPackage([
       "numpy",
-      // "scipy"
+      "scipy",
+      "sympy"
   ]);
 
   console.log("Numpy is now available ");
@@ -217,6 +216,8 @@ async function init() {
   simulateButton.removeAttribute("disabled");
   archetypeSelection.removeAttribute("disabled");
   initButton.classList.remove("button--loading");
+
+ // simulatorPromise = generateSimulator();
 }
 
 /**
@@ -250,9 +251,13 @@ function generateSimulator(config) {
 
 async function runSimulator(config) {
   simulatorPromise = generateSimulator(config);
+
+  // simulatorPromise.then(config)
   simulatorPromise.then(sim => {
+      // sim = Sim(config);
+
       // any simulator specific configuration
-      const n_samples = 51;
+      const n_samples = 81;
       xy = generateXY(n_samples);
       // console.log(typeof())
       const py_z = sim(xy);
@@ -271,8 +276,9 @@ async function runSimulator(config) {
 
 function buildConfig() {
   return {
-    "womerseley" : womersleyNumber(),
-    "cauchy" : cauchyNumber()
+    "womersley" : womersleyNumber(),
+    "cauchy" : cauchyNumber(),
+    "pinned_zone_radius" : zetaNumber()
   };
 }
 
@@ -308,7 +314,8 @@ function round(value, precision = 1) {
  */
 function transform(slider_value) {
   // range from 1--100, so we multiply by 0.1 to get the actual value
-  return parseFloat(slider_value) * 0.1;
+  // return parseFloat(slider_value) * 0.1;
+  return parseInt(slider_value) == 0 ? 0.1 : (parseFloat(slider_value)) * 0.1;
 }
 
 /**
@@ -329,12 +336,19 @@ function womersleyNumber() {
  *
  */
 function cauchyNumber() {
-  return round(transform(cauchySlider.value));
+  // from 0 - 10 in step of 1 with stpe of 1
+  return round(parseFloat(cauchySlider.value) * 0.01, 2);
 }
 
-function deltaANumber() {
-  return round(womersleyNumber() / cauchyNumber());
+function zetaNumber(){
+  // 1 - 5 with step of 1
+  return round(parseFloat(zetaSlider.value) * 0.1);
 }
+
+// function deltaDCNumber() {
+//   // TODO : Fill
+//   return round(womersleyNumber() / cauchyNumber());
+// }
 
 /* Display */
 /**
@@ -351,9 +365,13 @@ function showCauchyNumber() {
   cauchyReadout.innerHTML = cauchyNumber();
 }
 
-function showDeltaANumber() {
-  deltaAReadout.innerHTML = deltaANumber();
+function showZeta(){
+  zetaReadout.innerHTML = zetaNumber();
 }
+
+// function showDeltaDCNumber() {
+//   deltaAReadout.innerHTML = deltaDCNumber();
+// }
 
 // select buttons and input field
 const initButton = document.querySelector("#initButton");
@@ -368,32 +386,34 @@ const archetypeSelection = document.querySelector("#archetypeSelection");
 // sliders
 const womersleySlider = document.querySelector("#womersleySlider");
 const cauchySlider = document.querySelector("#cauchySlider");
+const zetaSlider = document.querySelector("#zetaSlider");
 
 // readouts
 const womersleyReadout = document.querySelector("#womersleyReadout");
 const cauchyReadout = document.querySelector("#cauchyReadout");
-const deltaAReadout = document.querySelector("#deltaAReadout");
+const zetaReadout = document.querySelector("#zetaReadout");
+const deltaDCReadout = document.querySelector("#deltaDCReadout");
 
 // add event listeners
 initButton.addEventListener("click", init, { once: true });
 simulateButton.addEventListener("click", startSimulator, { once: true });
 
-function defaultSimulationParameters() {
+function setDefaultSimulationParameters() {
   // set default here
   // choose case from the drop down menu
   const defaults = (() => {
     switch (archetypeSelection.value) {
-      case "h1":
-        return DefaultTypeA;
-      case "h2":
-        return DefaultTypeB;
+      case "elastic":
+        return ElasticDefaultParams;
+      case "rigid":
+        return RigidDefaultParams;
     }
   })();
 
   // sliders
-  womersleySlider.value = defaults.defaultW();
+  womersleySlider.value = defaults.defaultWomersley();
   cauchySlider.value = defaults.defaultCau();
-  showParameterInfo();
+  zetaSlider.value = defaults.defaultZeta();
 }
 
 /**
@@ -407,23 +427,26 @@ function addListeners() {
     // return a closure
     return () => {
       fn();
-      showDeltaANumber();
-      restartSimulator();
+      // showDeltaANumber();
+      if (pyodide != null) {
+        restartSimulator();
+      }
     };
   }
 
   const slider_pairs = [
     [womersleySlider, reset_and_(showWomersleyNumber)],
     [cauchySlider, reset_and_(showCauchyNumber)],
+    [zetaSlider, reset_and_(showZeta)],
   ];
 
   slider_pairs.forEach((p) => {
-    p[0].addEventListener("input", p[1]);
+    // p[0].addEventListener("input", p[1]);
     p[0].addEventListener("change", p[1]);
   });
 
   const selection_pairs = [
-    [archetypeSelection, reset_and_(defaultSimulationParameters)],
+    [archetypeSelection, reset_and_(setDefaultSimulationParameters)],
   ];
 
   selection_pairs.forEach((p) => {
@@ -434,6 +457,8 @@ function addListeners() {
 function showParameterInfo() {
   showWomersleyNumber();
   showCauchyNumber();
+  showZeta();
+  // showDeltaANumber();
 }
 
 // perform the gist fetching
@@ -441,16 +466,12 @@ const fileFetchPromise = fetchFile("streaming_sandbox.py");
 addListeners();
 
 MathJax.Hub.Queue(["Typeset", MathJax.Hub]); // LaTex enabled
-defaultSimulationParameters();
+setDefaultSimulationParameters();
+showParameterInfo();
 placeholderPlot();
 
-// display at first go
-showWomersleyNumber();
-showCauchyNumber();
-showDeltaANumber();
-
 // globals
-let requestID;
-var reset = true;
+let pyodide;
+// var reset = true;
 let simulatorPromise;
-var i = 0;
+// var i = 0;
