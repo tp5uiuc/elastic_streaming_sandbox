@@ -267,7 +267,13 @@ async function runSimulator(config) {
     const z = py_z.toJs();
     py_z.destroy();
 
-    const dc = sim.DC_layer_thickness(); // is a float value
+    try{
+      const dc = sim.DC_layer_thickness(); // is a float value
+      setDeltaDC(dc);
+    } catch (error){
+      console.log(error);
+      setDeltaDC(0.0);
+    }
 
     data = [...xy, z];
     Plotly.newPlot(
@@ -275,7 +281,7 @@ async function runSimulator(config) {
       assembleDataForPlotlyFigure(data),
       getPlotLayoutData(),
     );
-    setDeltaDC(dc);
+
   }); // .then(sim => {sim.destroy()});
   // streamingPlot(config["womerseley"], config["cauchy"]);
 }
