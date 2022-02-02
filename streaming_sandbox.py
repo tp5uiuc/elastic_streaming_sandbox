@@ -215,7 +215,7 @@ class ElasticStreamingSolution:
                 r
             ) + self.kappa * self.elasticity_effect_psi_radial_decay(r)
 
-        return root_scalar(f, bracket=(1.1, 2.0), x0=1.3).root - 1.0
+        return root_scalar(f, bracket=(1.1, 3.0), x0=1.3).root - 1.0
 
     def __call__(self, xy):
         # thin converter to
