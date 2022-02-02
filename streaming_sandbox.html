@@ -2,126 +2,150 @@
 
 <html>
 
-<head>
-  <meta name="description" content="Viscous streaming from elastic solid--flow interactions">
-  <!-- <meta name="description" content="A minimal (setting with coupled )elastic solid--fluid interactions"> -->
-  <meta name="keywords" content="CFD, fluids, elasticity, hyperelasticity, streaming">
-  <meta name="author" content="Tejaswin Parthasarathy">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Elastic streaming sandbox</title>
-  <link rel="stylesheet" href="streaming_sandbox.css">
-  <!-- pararllel_slab_sandbox.css -->
-</head>
+  <head>
+    <meta name="description" content="Viscous streaming from elastic solid--flow interactions">
+    <!-- <meta name="description" content="A minimal (setting with coupled )elastic solid--fluid interactions"> -->
+    <meta name="keywords" content="CFD, fluids, elasticity, hyperelasticity, streaming">
+    <meta name="author" content="Tejaswin Parthasarathy">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elastic streaming sandbox</title>
+    <link rel="stylesheet" href="streaming_sandbox.css">
+    <!-- pararllel_slab_sandbox.css -->
+  </head>
 
-<body>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG.js" defer></script>
-  <h1>
-    Elastic Streaming
-    <!-- A minimal setting with coupled elastic solid--fluid interactions -->
-    <!---Shear flow benchmark for testing elastic solid--fluid coupling algorithms--->
-  </h1>
+  <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG.js" defer></script>
+    <h1>
+      Elastic Streaming
+      <!-- A minimal setting with coupled elastic solid--fluid interactions -->
+      <!---Shear flow benchmark for testing elastic solid--fluid coupling algorithms--->
+    </h1>
 
-  <hr>
-  <p style="font-size: 16px; text-align: justify;">
-  The page provides an interactive sandbox for gaining intuition of body elasticity effects
-  in viscous streaming flows. Elasticity offers an additional, tunable streaming process available even in Stokes flows and hence paves way for advanced forms of flow manipulation at microscale. You can visualize
-  these elasticity effects by accessing a drop-down menu for choosing behavioral archetypes (from rigid to elastic). If you want more fine-level control, you can utilize sliders to change dynamical parameters. To access the physical meaning of these parameters, please hover over the underlined text.
-  </p>
-  <hr>
-  <div style="padding:20px; margin-left:auto; margin-right:auto; text-align:center;">
-    <div class="row">
+    <hr>
+    <p style="font-size: 16px; text-align: justify;">
+      The page provides an interactive sandbox for gaining intuition of body elasticity effects
+      in viscous streaming flows. Elasticity offers an additional, tunable streaming process available even in Stokes flows and hence paves way for advanced forms of flow manipulation at microscale. You can visualize
+      these elasticity effects by accessing a drop-down menu for choosing behavioral archetypes (from rigid to elastic). If you want more fine-level control, you can utilize sliders to change dynamical parameters. To access the physical meaning of these parameters, please hover over the underlined text.
+    </p>
+    <hr>
+    <div style="padding:20px; margin-left:auto; margin-right:auto; text-align:center;">
+      <div class="row">
 
-      <div class="column">
-        <div class="row">
-          <button type="button" id="initButton" class="loading_button"><span class="loading_button_text">Initialize engine</span></button>
-         </div>
-         <div class="row">
-          <span style="font-size:14px;">Initialization takes 10s to load</span>
-        </div>
-      </div>
-
-      <div class="double_width_column">
-        <div class="row">
-          <button id="simulateButton" type="button" disabled class="loading_button">
-            <span class="loading_button_text">Simulate!</span>
-          </button>
-        </div>
-        <div class="row">
-          <span style="font-size:14px;">Only need to simulate once:)</span>
-          <!-- First simulation takes longer -->
-        </div>
-      </div>
-
-      <div class="column">
-        <div class="row">
-          <select disabled id="archetypeSelection" class="big_button">
-            <option value="h1">Type A</option>
-            <option value="h2">Type B</option>
-          </select>
-        </div>
-        <div class="row">
-          <span style="font-size:14px;">Choose any archetype</span>
-        </div>
-      </div>
-
-
-     
-      </div>
-  
-
-  <div>
-    <div class="row" style="margin-top: 0px;">
-      <div class="column">
-        <div style="margin-left:-20px; margin-right:-20px; text-align:center; white-space: unset">
-          <div class="tooltip"> Womersley number <span class="tooltiptext"> A proxy for the Reynolds number, the ratio of inertial to viscous forces </span> </div> <span> \( M\) = </span> <span id="womersleyReadout"></span>
-          <br>
+        <div class="column">
           <div class="row">
-            <span class ="column" style="font-size:12px;"> More Viscous </span>
-            <span class="column"><input type="range" min="1" max="100" step="1" value="10"
+            <button type="button" id="initButton" class="loading_button"><span class="loading_button_text">Initialize engine</span></button>
+          </div>
+          <div class="row">
+            <span style="font-size:14px;">Initialization takes 10s to load</span>
+          </div>
+        </div>
+
+        <div class="double_width_column">
+          <div class="row">
+            <button id="simulateButton" type="button" disabled class="loading_button">
+              <span class="loading_button_text">Simulate!</span>
+            </button>
+          </div>
+          <div class="row">
+            <span style="font-size:14px;">Only need to simulate once:)</span>
+            <!-- First simulation takes longer -->
+          </div>
+        </div>
+
+        <div class="column">
+          <div class="row">
+            <select disabled id="archetypeSelection" class="big_button">
+              <option value="elastic">Elastic</option>
+              <option value="rigid">Rigid</option>
+            </select>
+          </div>
+          <div class="row">
+            <span style="font-size:14px;">Choose any archetype</span>
+          </div>
+        </div>
+
+
+
+      </div>
+
+
+      <div>
+        <div class="row" style="margin-top: 0px;">
+          <div class="column">
+            <div style="margin-left:-20px; margin-right:-20px; text-align:center; white-space: unset">
+
+              <div class="tooltip"> Womersley number <span class="tooltiptext"> A proxy for the Reynolds number, the ratio of inertial to viscous forces </span> </div> <span> \( M\) = </span> <span id="womersleyReadout"></span>
+              <br>
+
+              <div class="row">
+                <span class ="column" style="font-size:12px;"> More Viscous </span>
+                <span class="column"><input type="range" min="0" max="100" step="5" value="10"
               id="womersleySlider"></span class="column">
               <span class ="column" style="font-size:12px;">Less Viscous</span>
-            </div>
-            <br>
-            <div class="tooltip"> Cauchy number 
-              <span class="tooltiptext"> Ratio of inertial to elastic forces </span>
-            </div>
-             <span> \(Cau\) = </span><span id="cauchyReadout"></span>
-            <br>
-            <div class="row">
-              <span class ="column" style="font-size:12px;"> More Stiff </span>
-              <span class="column"><input type="range" min="1" max="100" step="1" value="10"
-                id="cauchySlider"></span class="column">
+              </div>
+
+              <br>
+
+              <div class="tooltip"> Cauchy number <span class="tooltiptext"> Ratio of inertial to elastic forces </span> </div> <span> \(Cau\) = </span><span id="cauchyReadout"></span>
+
+              <br>
+
+              <div class="row">
+                <span class ="column" style="font-size:12px;"> More Stiff </span>
+                <span class="column"><input type="range" min="0" max="10" step="1" value="5"
+              id="cauchySlider"></span class="column">
                 <span class ="column" style="font-size:12px;">Less Stiff</span>
               </div>
-            <br>
+
+              <br>
+
+              <div class="tooltip"> Pinned zone radius <span class="tooltiptext"> Radius of rigid zone </span>
+              </div> <span> \(\zeta\) = </span><span id="zetaReadout"></span>
+
+              <br>
+
+              <div class="row">
+                <span class ="column" style="font-size:12px;"> Smaller </span>
+                <span class="column"><input type="range" min="1" max="5" step="1" value="2"
+              id="zetaSlider"></span class="column">
+                <span class ="column" style="font-size:12px;"> Bigger </span>
+              </div>
+
             </div>
+            <!-- End sliders -->
+
+            <!-- Readouts -->
             <div class="para">
               <span class="para_inline">
-                <div class="tooltip">
-                  \(\delta_{DC}/a\)
-                  <span class="tooltiptext"> Scaled DC boundary layer thickness </span>
-                </div>
-                =
-                <span id="deltaAReadout"></span>
-              </span>
+            <div class="tooltip">
+              \(\delta_{DC}/a\)
+              <span class="tooltiptext"> Scaled DC boundary layer thickness </span>
             </div>
+            =
+            <span id="deltaDCReadout"></span>
+            </span>
           </div>
 
-          <div class="double_width_column" style="margin-right: 0px; margin-left: 0px;">
-            <div class="row">
-              <div class="double_width_column" style="margin-right: -30px; margin-left: -20px;">
-                <!-- style="margin-right: 0; margin-left: 0; -->
-                <figure id="plot_div">
-                </figure>
-                </div>
+        </div>
+
+        <div class="double_width_column" style="margin-right: 0px; margin-left: 0px;">
+          <div class="row">
+            <div class="double_width_column" style="margin-right: -30px; margin-left: -20px;">
+              <!-- style="margin-right: 0; margin-left: 0; -->
+              <figure id="plot_div">
+              </figure>
             </div>
           </div>
         </div>
-      </div>
-      
+        <!-- end figure width -->
 
-<hr> 
+      </div>
+      <!--   end row -->
+    </div>
+
+
+    <hr>
 
     <footer>
       <p style="font-size:14px; text-align:center;">
@@ -138,15 +162,14 @@
         Copyright © 2022 <a href="https://parthas1.github.io/" target="_blank" rel="noopener">Tejaswin Parthasarathy</a>, <a href="https://mattia-lab.com/" target="_blank" rel="noopener">GazzolaLab</a>.
       </p>
     </footer>
-  <script type="text/javascript" id="MathJax-script"
-    src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML'>
-  </script>
-  <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-  <script type="text/javascript" src="streaming_sandbox.js"></script>
-  <noscript>
-    <p>Oops! This website requires a JavaScript-enabled browser.</p>
-  </noscript>
+    <script type="text/javascript" id="MathJax-script" src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML'>
+    </script>
+    <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script type="text/javascript" src="streaming_sandbox.js"></script>
+    <noscript>
+      <p>Oops! This website requires a JavaScript-enabled browser.</p>
+    </noscript>
 
-</body>
+  </body>
 
 </html>
