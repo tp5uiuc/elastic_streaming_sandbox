@@ -40,7 +40,7 @@ def compute_factors(womerseley):
     c_3 = arg1(inf) / 16 - arg2(inf) / 8
     c_4 = -arg1(inf) / 24 + arg2(inf) / 16
 
-    womerseley_effect = (-e * hankel1(1, e) / hankel1(0, e)).evalf()
+    womerseley_effect = np.cdouble((-e * hankel1(1, e) / hankel1(0, e)).evalf())
 
     def rigid_effects(zeta):
         return np.vectorize(
@@ -207,6 +207,16 @@ class ElasticStreamingSolution:
 
         return X, Y, Z
 
+    def DC_layer_thickness(self):
+        from scipy.optimize import root_scalar
+
+        def f(r):
+            return self.rigid_body_psi_radial_decay(
+                r
+            ) + self.kappa * self.elasticity_effect_psi_radial_decay(r)
+
+        return root_scalar(f, bracket=(1.1, 2.0), x0=1.3).root - 1.0
+
     def __call__(self, xy):
         # thin converter to
         to_py = map(lambda x: np.asarray(x.to_py()), xy)
@@ -228,32 +238,3 @@ def simulator(config: Dict[str, str]):
         float(pyconfig["cauchy"]),
         float(pyconfig["pinned_zone_radius"]),
     )
-
-
-# DON'T CALL FROM JAVASCRIPT side
-def test_code():
-    womerseley = 8
-    cauchy = 0.05
-    zeta = 0.2
-    solution = ElasticStreamingSolution(w=womerseley, c=cauchy, z=zeta)
-    x = np.linspace(-3.0, 3.0, 50)
-    y = np.linspace(-3.0, 3.0, 50)
-    # for _ in range(10):
-    from timeit import default_timer as timer
-
-    start = timer()
-    X, Y, Z = solution.process(x, y)
-    end = timer()
-    print("process ", end - start)
-
-    from matplotlib import pyplot as plt
-
-    contr = plt.contourf(X, Y, Z, levels=50)
-    plt.colorbar(contr)
-    plt.contour(X, Y, Z, levels=11, colors="k", linewidths=2)
-    plt.show()
-
-
-# no longer works with latest pyodide
-# if __name__ == "__main__":
-#     test_code()

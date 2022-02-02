@@ -267,12 +267,15 @@ async function runSimulator(config) {
     const z = py_z.toJs();
     py_z.destroy();
 
+    const dc = sim.DC_layer_thickness(); // is a float value
+
     data = [...xy, z];
     Plotly.newPlot(
       'plot_div',
       assembleDataForPlotlyFigure(data),
       getPlotLayoutData(),
     );
+    setDeltaDC(dc);
   }); // .then(sim => {sim.destroy()});
   // streamingPlot(config["womerseley"], config["cauchy"]);
 }
@@ -372,6 +375,9 @@ function showZeta() {
   zetaReadout.innerHTML = zetaNumber();
 }
 
+function setDeltaDC(dc_value){
+  deltaDCReadout.innerHTML = round(dc_value, 3);
+}
 // function showDeltaDCNumber() {
 //   deltaAReadout.innerHTML = deltaDCNumber();
 // }
