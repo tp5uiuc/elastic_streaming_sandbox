@@ -174,11 +174,11 @@ class ElasticStreamingSolution:
         n_grid_samples = 81
         r = np.hstack(
             (
-                np.linspace(0.5, 1.5, 31, endpoint=False),
+                np.linspace(1.0, 1.5, 31, endpoint=False),
                 np.linspace(1.5, np.ceil(r_max), n_grid_samples - 21),
             )
         )
-        idx = r > 0.8
+        idx = r > 1.0
         theta = np.linspace(0.0, 2.0 * np.pi, n_grid_samples - 1, endpoint=False)
 
         psi_rad_variation = 0.0 * r
@@ -215,7 +215,22 @@ class ElasticStreamingSolution:
                 r
             ) + self.kappa * self.elasticity_effect_psi_radial_decay(r)
 
-        return root_scalar(f, bracket=(1.1, 3.0), x0=1.3).root - 1.0
+        root_lower_bracket = 1.1
+        root_upper_bracket = 3.0
+        root_initial_guess = 2.0
+        # Below we check if a finite DC layer exists within said limits
+        if f(root_lower_bracket) * f(root_upper_bracket) < 0:
+            return (
+                root_scalar(
+                    f,
+                    bracket=(root_lower_bracket, root_upper_bracket),
+                    x0=root_initial_guess,
+                ).root
+                - 1.0
+            )
+        else:
+            # refactor on JS side as you feel apt
+            return "DC layer diverging!"
 
     def __call__(self, xy):
         # thin converter to
