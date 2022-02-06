@@ -3,9 +3,12 @@ from streaming_sandbox import ElasticStreamingSolution
 
 # DON'T CALL FROM JAVASCRIPT side
 def test_code():
-    womerseley = 8
+    # Safe range: 7 < womerseley < 15
+    womerseley = 7
+    # Safe range: 0 < cauchy < 0.05
     cauchy = 0.05
-    zeta = 0.2
+    # Safe range: 0.2 < zeta < 1
+    zeta = 0.4
     solution = ElasticStreamingSolution(w=womerseley, c=cauchy, z=zeta)
     print(solution.DC_layer_thickness())
     r = np.linspace(1.1, 2.0, 501)
