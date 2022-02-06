@@ -267,10 +267,10 @@ async function runSimulator(config) {
     const z = py_z.toJs();
     py_z.destroy();
 
-    try{
+    try {
       const dc = sim.DC_layer_thickness(); // is a float value
       setDeltaDC(dc);
-    } catch (error){
+    } catch (error) {
       console.log(error);
       setDeltaDC(0.0);
     }
@@ -281,7 +281,6 @@ async function runSimulator(config) {
       assembleDataForPlotlyFigure(data),
       getPlotLayoutData(),
     );
-
   }); // .then(sim => {sim.destroy()});
   // streamingPlot(config["womerseley"], config["cauchy"]);
 }
@@ -381,7 +380,7 @@ function showZeta() {
   zetaReadout.innerHTML = zetaNumber();
 }
 
-function setDeltaDC(dc_value){
+function setDeltaDC(dc_value) {
   deltaDCReadout.innerHTML = round(dc_value, 3);
 }
 // function showDeltaDCNumber() {
@@ -461,7 +460,7 @@ function addListeners() {
   });
 
   const selection_pairs = [
-    [archetypeSelection, reset_and_(setDefaultSimulationParameters)],
+    [archetypeSelection, reset_and_(() => { setDefaultSimulationParameters(); showParameterInfo(); })],
   ];
 
   selection_pairs.forEach((p) => {
