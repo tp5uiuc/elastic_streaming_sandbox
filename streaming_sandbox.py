@@ -12,7 +12,7 @@ def compute_factors(womerseley):
 
     # symbols defined as per Holtsmark et al., 1954.
     r = symbols("r", real=True)
-    e = womerseley * 1j ** 0.5
+    e = womerseley * 1j**0.5
     X = hankel1(0, e * r) / hankel1(0, e)
     Z = hankel1(2, e * r) / hankel1(0, e)
     C = Z.subs(r, 1)
@@ -20,16 +20,16 @@ def compute_factors(womerseley):
     # Rigid body streaming psi computation
     # time-averaged Reynolds stress term, Holtsmark et al., 1954
     steady_reynolds_stress = Z - conjugate(Z)
-    steady_reynolds_stress += C * conjugate(X) / r ** 2 - conjugate(C) * X / r ** 2
+    steady_reynolds_stress += C * conjugate(X) / r**2 - conjugate(C) * X / r**2
     steady_reynolds_stress += 2 * X * conjugate(Z) - 2 * conjugate(X) * Z
-    steady_reynolds_stress *= -1j * (womerseley ** 4) / 4
+    steady_reynolds_stress *= -1j * (womerseley**4) / 4
     steady_reynolds_stress = simplify(steady_reynolds_stress)
 
     # For terms and coefficients below, refer to Holtsmark et al., 1954
     f1 = lambdify(r, steady_reynolds_stress / r)
     f2 = lambdify(r, steady_reynolds_stress * r)
-    f3 = lambdify(r, steady_reynolds_stress * (r ** 3))
-    f4 = lambdify(r, steady_reynolds_stress * (r ** 5))
+    f3 = lambdify(r, steady_reynolds_stress * (r**3))
+    f4 = lambdify(r, steady_reynolds_stress * (r**5))
     arg1 = lru_cache(maxsize=50)(lambda x: integrate.quad(f1, 1, x)[0])
     arg2 = lru_cache(maxsize=50)(lambda x: integrate.quad(f2, 1, x)[0])
     arg3 = lru_cache(maxsize=50)(lambda x: integrate.quad(f3, 1, x)[0])
@@ -45,22 +45,22 @@ def compute_factors(womerseley):
     def rigid_effects(zeta):
         return np.vectorize(
             lambda y: (
-                y ** 4 * (arg1(y) / 48 + c_1)
-                + y ** 2 * (-arg2(y) / 16 + c_2)
+                y**4 * (arg1(y) / 48 + c_1)
+                + y**2 * (-arg2(y) / 16 + c_2)
                 + (arg3(y) / 16 + c_3)
-                + (-arg4(y) / 48 + c_4) / y ** 2
+                + (-arg4(y) / 48 + c_4) / y**2
             )
         )
 
     def elastic_effects(zeta):
         # Elasticity effects streaming psi computation
-        zeta_effect = 0.5 * ((zeta ** 2 + 1) * np.log(zeta) / (zeta ** 2 - 1) - 1)
+        zeta_effect = 0.5 * ((zeta**2 + 1) * np.log(zeta) / (zeta**2 - 1) - 1)
         return lambda y: (
             0.5
             * zeta_effect
             * np.abs(womerseley_effect) ** 2
             * (1 - y ** (-2))
-            / womerseley ** 2
+            / womerseley**2
         )
 
     return (rigid_effects, elastic_effects)
@@ -105,7 +105,7 @@ class ElasticStreamingSolution:
 
         # symbols defined as per Holtsmark et al., 1954.
         r = symbols("r", real=True)
-        e = self.womerseley * 1j ** 0.5
+        e = self.womerseley * 1j**0.5
         X = hankel1(0, e * r) / hankel1(0, e)
         Z = hankel1(2, e * r) / hankel1(0, e)
         C = Z.subs(r, 1)
@@ -113,16 +113,16 @@ class ElasticStreamingSolution:
         # Rigid body streaming psi computation
         # time-averaged Reynolds stress term, Holtsmark et al., 1954
         steady_reynolds_stress = Z - conjugate(Z)
-        steady_reynolds_stress += C * conjugate(X) / r ** 2 - conjugate(C) * X / r ** 2
+        steady_reynolds_stress += C * conjugate(X) / r**2 - conjugate(C) * X / r**2
         steady_reynolds_stress += 2 * X * conjugate(Z) - 2 * conjugate(X) * Z
-        steady_reynolds_stress *= -1j * (self.womerseley ** 4) / 4
+        steady_reynolds_stress *= -1j * (self.womerseley**4) / 4
         steady_reynolds_stress = simplify(steady_reynolds_stress)
 
         # For terms and coefficients below, refer to Holtsmark et al., 1954
         f1 = lambdify(r, steady_reynolds_stress / r)
         f2 = lambdify(r, steady_reynolds_stress * r)
-        f3 = lambdify(r, steady_reynolds_stress * (r ** 3))
-        f4 = lambdify(r, steady_reynolds_stress * (r ** 5))
+        f3 = lambdify(r, steady_reynolds_stress * (r**3))
+        f4 = lambdify(r, steady_reynolds_stress * (r**5))
         arg1 = lambda x: integrate.quad(f1, 1, x)[0]
         arg2 = lambda x: integrate.quad(f2, 1, x)[0]
         arg3 = lambda x: integrate.quad(f3, 1, x)[0]
@@ -133,16 +133,16 @@ class ElasticStreamingSolution:
         c_4 = -arg1(np.inf) / 24 + arg2(np.inf) / 16
         self.rigid_body_psi_radial_decay = np.vectorize(
             lambda y: (
-                y ** 4 * (arg1(y) / 48 + c_1)
-                + y ** 2 * (-arg2(y) / 16 + c_2)
+                y**4 * (arg1(y) / 48 + c_1)
+                + y**2 * (-arg2(y) / 16 + c_2)
                 + (arg3(y) / 16 + c_3)
-                + (-arg4(y) / 48 + c_4) / y ** 2
+                + (-arg4(y) / 48 + c_4) / y**2
             )
         )
 
         # Elasticity effects streaming psi computation
         zeta_effect = 0.5 * (
-            (self.zeta ** 2 + 1) * np.log(self.zeta) / (self.zeta ** 2 - 1) - 1
+            (self.zeta**2 + 1) * np.log(self.zeta) / (self.zeta**2 - 1) - 1
         )
         womerseley_effect = (-e * hankel1(1, e) / hankel1(0, e)).evalf()
         self.elasticity_effect_psi_radial_decay = lambda y: (
@@ -150,7 +150,7 @@ class ElasticStreamingSolution:
             * zeta_effect
             * np.abs(womerseley_effect) ** 2
             * (1 - y ** (-2))
-            / self.womerseley ** 2
+            / self.womerseley**2
         )
 
     @staticmethod
@@ -159,7 +159,7 @@ class ElasticStreamingSolution:
         Generates lambda for psi angular variation, sin(2 theta)
         directly from X and Y, skipping theta computation.
         """
-        return lambda x, y: 2 * x * y / (x ** 2 + y ** 2)
+        return lambda x, y: 2 * x * y / (x**2 + y**2)
 
     def process(self, x: np.ndarray, y: np.ndarray):
         """
@@ -174,11 +174,11 @@ class ElasticStreamingSolution:
         n_grid_samples = 81
         r = np.hstack(
             (
-                np.linspace(0.5, 1.5, 31, endpoint=False),
+                np.linspace(1.0, 1.5, 31, endpoint=False),
                 np.linspace(1.5, np.ceil(r_max), n_grid_samples - 21),
             )
         )
-        idx = r > 0.8
+        idx = r > 1.0
         theta = np.linspace(0.0, 2.0 * np.pi, n_grid_samples - 1, endpoint=False)
 
         psi_rad_variation = 0.0 * r
@@ -215,7 +215,22 @@ class ElasticStreamingSolution:
                 r
             ) + self.kappa * self.elasticity_effect_psi_radial_decay(r)
 
-        return root_scalar(f, bracket=(1.1, 3.0), x0=1.3).root - 1.0
+        root_lower_bracket = 1.1
+        root_upper_bracket = 3.0
+        root_initial_guess = 2.0
+        # Below we check if a finite DC layer exists within said limits
+        if f(root_lower_bracket) * f(root_upper_bracket) < 0:
+            return (
+                root_scalar(
+                    f,
+                    bracket=(root_lower_bracket, root_upper_bracket),
+                    x0=root_initial_guess,
+                ).root
+                - 1.0
+            )
+        else:
+            # refactor on JS side as you feel apt
+            return "DC layer diverging!"
 
     def __call__(self, xy):
         # thin converter to
